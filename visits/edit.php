@@ -123,11 +123,38 @@ try {
                     </div>
                 </div>
 
+                <?php if($visit['photo_path']): ?>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Purpose of Visit</label>
-                    <textarea name="purpose" required rows="3" 
+                    <label class="block text-sm font-medium text-gray-700">Current Photo</label>
+                    <div class="mt-1 relative h-48 bg-gray-100 rounded-lg overflow-hidden">
+                        <img src="../<?php echo htmlspecialchars($visit['photo_path']); ?>" 
+                             alt="Current visit photo" 
+                             class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Update Photo (optional)</label>
+                    <div class="mt-1 flex items-center">
+                        <div class="w-full">
+                            <input type="file" name="visit_photo" accept="image/*"
+                                   class="block w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-md file:border-0
+                                          file:text-sm file:font-semibold
+                                          file:bg-blue-50 file:text-blue-700
+                                          hover:file:bg-blue-100">
+                        </div>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Leave empty to keep current photo. Max size: 5MB</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" required rows="4" 
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="Please describe the purpose of your visit"><?php echo htmlspecialchars($visit['purpose']); ?></textarea>
+                              placeholder="Please provide a detailed description of your visit"><?php echo htmlspecialchars($visit['description']); ?></textarea>
                 </div>
 
                 <div>
