@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS visits (
     visit_date DATE,
     start_time TIME,
     end_time TIME,
+    photo_path VARCHAR(255),
+    description TEXT,
     status ENUM('pending', 'approved', 'rejected', 'completed') DEFAULT 'pending',
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
