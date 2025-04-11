@@ -104,6 +104,19 @@ try {
                 </div>
             <?php endif; ?>
 
+            <!-- Visit Photo -->
+            <?php if($visit['photo_path']): ?>
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Visit Photo</h3>
+                <div class="relative h-64 bg-gray-100 rounded-lg overflow-hidden">
+                    <img src="../<?php echo htmlspecialchars($visit['photo_path']); ?>" 
+                         alt="Visit photo" 
+                         class="absolute inset-0 w-full h-full object-cover cursor-pointer"
+                         onclick="toggleImageSize(this)">
+                </div>
+            </div>
+            <?php endif; ?>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div class="space-y-4">
                     <div>
@@ -134,8 +147,8 @@ try {
                         <p class="text-sm text-gray-500"><?php echo htmlspecialchars($visit['host_email']); ?></p>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-500">Purpose</h3>
-                        <p class="mt-1 text-sm text-gray-900"><?php echo nl2br(htmlspecialchars($visit['purpose'])); ?></p>
+                        <h3 class="text-sm font-medium text-gray-500">Description</h3>
+                        <p class="mt-1 text-sm text-gray-900"><?php echo nl2br(htmlspecialchars($visit['description'])); ?></p>
                     </div>
                     <?php if($visit['notes']): ?>
                     <div>
@@ -226,6 +239,29 @@ try {
 
         function hideRejectModal() {
             document.getElementById('rejectModal').classList.add('hidden');
+        }
+
+        function toggleImageSize(img) {
+            const container = img.closest('.relative');
+            if (container.classList.contains('h-64')) {
+                // Expand
+                container.classList.remove('h-64');
+                container.classList.add('h-auto');
+                img.classList.remove('object-cover');
+                img.classList.add('object-contain');
+                img.style.position = 'relative';
+                img.style.height = 'auto';
+                img.style.maxHeight = '80vh';
+            } else {
+                // Collapse
+                container.classList.add('h-64');
+                container.classList.remove('h-auto');
+                img.classList.add('object-cover');
+                img.classList.remove('object-contain');
+                img.style.position = 'absolute';
+                img.style.height = '100%';
+                img.style.maxHeight = 'none';
+            }
         }
     </script>
 </body>
