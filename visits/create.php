@@ -4,24 +4,6 @@ require_once '../includes/auth.php';
 
 // Ensure user is logged in and has permission
 requireRole('employee');
-
-// Get list of potential hosts (managers and employees)
-try {
-    $stmt = $pdo->prepare("
-        SELECT u.id, u.full_name, p.name as position
-        FROM users u
-        JOIN positions p ON u.position_id = p.id
-        WHERE u.id != ? AND u.role_id IN (
-            SELECT id FROM roles WHERE name IN ('manager', 'employee')
-        )
-        ORDER BY p.level, u.full_name
-    ");
-    $stmt->execute([$_SESSION['user_id']]);
-    $potential_hosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    error_log("Error fetching hosts: " . $e->getMessage());
-    $potential_hosts = [];
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -58,26 +40,37 @@ try {
                 </div>
             <?php endif; ?>
 
-            <form action="process.php" method="POST" class="space-y-6">
+            <form action="process.php" method="POST" enctype="multipart/form-data" class="space-y-6">
                 <input type="hidden" name="action" value="create">
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Host</label>
-                    <select name="host_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md">
-                        <option value="">Select a host</option>
-                        <?php foreach($potential_hosts as $host): ?>
-                            <option value="<?php echo $host['id']; ?>">
-                                <?php echo htmlspecialchars($host['full_name'] . ' (' . $host['position'] . ')'); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Visit Date</label>
                     <input type="date" name="visit_date" required 
                            min="<?php echo date('Y-m-d'); ?>"
                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Visit Photo</label>
+                    <div class="mt-1 flex items-center">
+                        <div class="w-full">
+                            <input type="file" name="visit_photo" accept="image/*" required
+                                   class="block w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-md file:border-0
+                                          file:text-sm file:font-semibold
+                                          file:bg-blue-50 file:text-blue-700
+                                          hover:file:bg-blue-100">
+                        </div>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">Upload a photo related to the visit (Max 5MB)</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="description" required rows="4" 
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Please provide a detailed description of your visit"></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -94,17 +87,10 @@ try {
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Purpose of Visit</label>
-                    <textarea name="purpose" required rows="3" 
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="Please describe the purpose of your visit"></textarea>
-                </div>
-
-                <div>
                     <label class="block text-sm font-medium text-gray-700">Additional Notes</label>
                     <textarea name="notes" rows="2" 
                               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                              placeholder="Any additional information"></textarea>
+                              placeholder="Any additional information (optional)"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3">
@@ -120,5 +106,16 @@ try {
             </form>
         </div>
     </div>
+
+    <script>
+        // Preview image before upload
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
+                alert('File size must be less than 5MB');
+                e.target.value = '';
+            }
+        });
+    </script>
 </body>
 </html>
